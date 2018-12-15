@@ -56,6 +56,7 @@ def parse_schedule(web_page: list, day: str) -> Optional[Tuple[list, list, list,
                 'friday', 'saturday', 'sunday'])
 def get_schedule(message: telebot.types.Message) -> telebot.types.Message:
     """ Получить расписание на указанный день """
+
     day, week, group = message.text.split()
     web_page = get_page(group, week)
     schedule = parse_schedule(web_page, day[1:])
@@ -73,7 +74,11 @@ def get_schedule(message: telebot.types.Message) -> telebot.types.Message:
 @bot.message_handler(commands=['near'])
 def get_near_lesson(message: telebot.types.Message) -> telebot.types.Message:
     """ Получить ближайшее занятие """
-    _, group = message.text.split()
+    try:
+        _, group = message.text.split()
+    except:
+        bot.send_message(message.chat.id, 'Incorrect data')
+        return None
     today = int(datetime.datetime.today().weekday())
     week = (int(datetime.datetime.now().isocalendar()[1]) + 1) % 2
     web_page = get_page(group, week)
@@ -138,7 +143,11 @@ def get_near_lesson(message: telebot.types.Message) -> telebot.types.Message:
 @bot.message_handler(commands=['tommorow'])
 def get_tommorow(message: telebot.types.Message) -> telebot.types.Message:
     """ Получить расписание на следующий день """
-    _, group = message.text.split()
+    try:
+        _, group = message.text.split()
+    except:
+        bot.send_message(message.chat.id, 'Incorrect data')
+        return None
     today = int(datetime.datetime.today().weekday())
     if today == 6:
         week = int(datetime.datetime.now().isocalendar()[1]) % 2
@@ -161,7 +170,11 @@ def get_tommorow(message: telebot.types.Message) -> telebot.types.Message:
 @bot.message_handler(commands=['all'])
 def get_all_schedule(message: telebot.types.Message) -> telebot.types.Message:
     """ Получить расписание на всю неделю для указанной группы """
-    _, week, group = message.text.split()
+    try:
+        _, week, group = message.text.split()
+    except:
+        bot.send_message(message.chat.id, 'Incorrect data')
+        return None
     web_page = get_page(group, week)
     for day in range(7):
         schedule = parse_schedule(web_page, week_list[day])
